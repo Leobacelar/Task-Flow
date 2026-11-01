@@ -9,28 +9,34 @@
       <span>TaskFlow</span>
     </div>
 
-    <button class="nav-button">Quadros</button>
-    <button class="nav-button">Templates</button>
-    <button class="nav-button">Início</button>
+    <button
+  class="nav-button"
+  [class.ativo]="telaAtual === 'quadros'"
+  (click)="telaAtual = 'quadros'">
+  Quadros
+</button>
 
+<button class="nav-button"
+  [class.ativo]="telaAtual === 'sobre'"
+  (click)="telaAtual = 'sobre'">
+  Sobre
+</button>
+
+<button
+  class="nav-button"
+  [class.ativo]="telaAtual === 'inicio'"
+  (click)="telaAtual = 'inicio'">
+  Início
+</button>
   </div>
 
   <div class="nav-center">
-
-    <input
-      type="text"
-      class="search"
-      placeholder="Pesquisar..."
-    >
 
   </div>
 
   <div class="nav-right">
 
-    <button class="icon-button">＋</button>
-
-    <button class="icon-button">🔔</button>
-
+  
     <div class="avatar">
       TESTE
     </div>
@@ -38,8 +44,22 @@
   </div>
 
 </header>
+@if (telaAtual === 'inicio') {
+    <app-inicio
+    [totalAtividades]="totalAtividades"
+    [atividadesAndamento]="atividadesAndamento"
+    [atividadesConcluidas]="atividadesConcluidas"
+    [atividadesAFazer]="atividadesAFazer"
+    [progresso]="progresso">
+  </app-inicio>
+}
+@if (telaAtual === 'sobre') {
+  <app-sobre></app-sobre>
+}
 
 
+
+@if (telaAtual === 'quadros') {
 <section class="board-header">
 
   <div class="titulo-centro">
@@ -550,4 +570,4 @@
 
 
 </main>
-
+}

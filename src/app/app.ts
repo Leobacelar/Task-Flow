@@ -1,20 +1,22 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterOutlet } from '@angular/router';
-
+import { RouterOutlet, RouterLink} from '@angular/router';
+import { Inicio } from './inicio/inicio';
+import { Sobre } from './sobre/sobre';
 @Component({
-  imports: [RouterOutlet, FormsModule],
+  imports: [RouterOutlet, RouterLink, FormsModule, Inicio, Sobre],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
+
 export class App {
 
   listaSelecionada = '';
   tituloAtividade = '';
   descricaoAtividade = '';
   
-
+telaAtual = 'quadros';
 
   
 
@@ -24,6 +26,36 @@ cartoes:any[] = [];
  cartaoSelecionado: any = null;
 mostrarMover: boolean = false;
  quadroDestino = '';
+
+ get totalAtividades() {
+  return this.cartoes.length;
+}
+
+get atividadesAFazer() {
+  return this.cartoes.filter(cartao => cartao.lista === 'a-fazer').length;
+}
+
+get atividadesAndamento() {
+  return this.cartoes.filter(cartao => cartao.lista === 'Em-andamento').length;
+}
+
+get atividadesRevisao() {
+  return this.cartoes.filter(cartao => cartao.lista === 'Em-revisao').length;
+}
+
+get atividadesConcluidas() {
+  return this.cartoes.filter(cartao => cartao.lista === 'finalizado').length;
+}
+
+get progresso() {
+  if (this.totalAtividades === 0) {
+    return 0;
+  }
+
+  return Math.round(
+    (this.atividadesConcluidas / this.totalAtividades) * 100
+  );
+}
  
   adicionarCartao(lista: string) {
 
