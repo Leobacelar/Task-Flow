@@ -1,0 +1,573 @@
+<header class="navbar">
+
+  <div class="nav-left">
+
+   
+
+    <div class="logo">
+      <span class="logo-icon">✓</span>
+      <span>TaskFlow</span>
+    </div>
+
+    <button
+  class="nav-button"
+  [class.ativo]="telaAtual === 'quadros'"
+  (click)="telaAtual = 'quadros'">
+  Quadros
+</button>
+
+<button class="nav-button"
+  [class.ativo]="telaAtual === 'sobre'"
+  (click)="telaAtual = 'sobre'">
+  Sobre
+</button>
+
+<button
+  class="nav-button"
+  [class.ativo]="telaAtual === 'inicio'"
+  (click)="telaAtual = 'inicio'">
+  Início
+</button>
+  </div>
+
+  <div class="nav-center">
+
+  </div>
+
+  <div class="nav-right">
+
+  
+    <div class="avatar">
+      TESTE
+    </div>
+
+  </div>
+
+</header>
+@if (telaAtual === 'inicio') {
+    <app-inicio
+    [totalAtividades]="totalAtividades"
+    [atividadesAndamento]="atividadesAndamento"
+    [atividadesConcluidas]="atividadesConcluidas"
+    [atividadesAFazer]="atividadesAFazer"
+    [progresso]="progresso">
+  </app-inicio>
+}
+@if (telaAtual === 'sobre') {
+  <app-sobre></app-sobre>
+}
+
+
+
+@if (telaAtual === 'quadros') {
+<section class="board-header">
+
+  <div class="titulo-centro">
+
+    <h1>
+      TaskFlow
+    </h1>
+
+    
+
+  </div>
+
+  <div class="board-actions">
+  </div>
+
+</section>
+
+<div
+  class="tela-mover"
+  [class.ativo]="mostrarMover"
+>
+
+  <div class="janela-mover">
+
+    <h3>Mover atividade</h3>
+
+    <p>
+      Mover
+      <strong>"{{ cartaoSelecionado?.titulo }}"</strong>
+      para:
+    </p>
+
+    <select [(ngModel)]="quadroDestino">
+
+      <option value="">
+        Escolha um quadro
+      </option>
+
+      <option value="a-fazer">
+        A fazer
+      </option>
+
+      <option value="Em-andamento">
+        Em andamento
+      </option>
+
+      <option value="Em-revisao">
+        Em revisão
+      </option>
+
+      <option value="finalizado">
+        Concluído
+      </option>
+
+    </select>
+
+    <div class="botoes-mover">
+
+      <button
+        class="botao-mover"
+        type="button"
+        (click)="moverAtividade()"
+      >
+        Mover
+      </button>
+
+      <button
+        class="botao-cancelar"
+        type="button"
+        (click)="cancelarMovimento()"
+      >
+        Cancelar
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<main class="board">
+
+
+
+
+
+  
+
+  <section class="list">
+
+    <div class="list-header">
+
+      <h2>A fazer</h2>
+
+      
+
+    </div>
+
+    <div class="cards">
+
+      
+       @for (cartao of cartoes; track $index) {
+
+    @if (cartao.lista === 'a-fazer') {
+
+      <article class="card">
+
+  <div class="labels">
+    <span class="label green"></span>
+
+    <button
+    class="card-menu-button"
+      type="button"
+      (click)="abrirMenu(cartao)"
+    >
+      •••
+    </button>
+  </div>
+  @if (menuAberto && cartaoMenu === cartao) {
+  <div class="card-menu">
+
+    <button
+    type="button"
+    (click)="editarCartao(cartao)"
+    
+  >
+    ✏️ Editar
+  </button>
+
+  <button
+    type="button"
+    (click)="excluirCartao(cartao)"
+  >
+    🗑️ Excluir
+  </button>
+
+</div>
+}
+
+        <h3>
+          {{ cartao.titulo }}
+        </h3>
+
+        <p>
+          {{ cartao.descricao }}
+        </p>
+
+        <div class="card-footer">
+        <button class="move-button" (click)="moverCartao(cartao)">
+         ⇄ Mover</button>
+      </div>
+
+      </article>
+
+    }
+
+  }
+
+    </div>
+
+     <button class="add-card" (click)="adicionarCartao('a-fazer')">
+      ＋ Adicionar um cartão
+    </button>
+
+    @if (listaSelecionada === 'a-fazer'){
+      <div class="formulario">
+
+      <h3> @if (editando){
+        Editar atividade
+      } @else {
+        Adicionar atividade
+      }
+      </h3>
+      <input 
+      type="text"
+      placeholder="Título da atividade"
+      [(ngModel)]="tituloAtividade"
+  
+>
+      <textarea placeholder="Descrição da atividade"
+      [(ngModel)]="descricaoAtividade"></textarea>
+
+      @if (editando){
+        <button (click)="salvarEdicao()">
+          Salvar
+        </button>
+      }@else {
+        <button (click)="adicionarAtividade()">
+          Adicionar
+        </button>
+
+      }
+      <button (click)="cancelarAtividade()">
+       Cancelar
+      </button>
+      </div>
+    }
+
+
+  </section>
+
+
+  
+
+  <section class="list">
+
+    <div class="list-header">
+
+      <h2>Em andamento</h2>
+
+     
+
+    </div>
+
+    <div class="cards">
+
+      
+      @for (cartao of cartoes; track $index) {
+
+  @if (cartao.lista === 'Em-andamento') {
+
+    <article class="card">
+
+  <div class="labels">
+    <span class="label purple"></span>
+
+    <button
+    class="card-menu-button"
+      type="button"
+      (click)="abrirMenu(cartao)"
+    >
+      •••
+    </button>
+  </div>
+  @if (menuAberto && cartaoMenu === cartao) {
+  <div class="card-menu">
+
+    <button
+      type="button"
+      (click)="editarCartao(cartao)"
+    >
+      ✏️ Editar
+    </button>
+
+    <button
+      type="button"
+      (click)="excluirCartao(cartao)"
+    >
+      🗑️ Excluir
+    </button>
+
+  </div>
+}
+
+      <h3>
+        {{ cartao.titulo }}
+      </h3>
+
+      <p>
+        {{ cartao.descricao }}
+      </p>
+
+      <div class="card-footer">
+        <button class="move-button" (click)="moverCartao(cartao)">
+         ⇄ Mover</button>
+      </div>
+
+    </article>
+
+  }
+
+}
+
+    </div>
+
+     <button class="add-card" (click)="adicionarCartao('Em-andamento')">
+      ＋ Adicionar um cartão
+    </button>
+
+    @if (listaSelecionada === 'Em-andamento'){
+      <div class="formulario">
+
+      <h3> Adicionar atividade</h3>
+      <input 
+      type="text"
+      placeholder="Título da atividade"
+      [(ngModel)]="tituloAtividade"
+  
+>
+      <textarea placeholder="Descrição da atividade"
+      [(ngModel)]="descricaoAtividade"></textarea>
+
+      <button (click)="adicionarAtividade()">Adicionar</button>
+
+      <button (click)="cancelarAtividade()">Cancelar</button>
+
+      </div>
+    }
+
+  </section>
+
+
+  
+
+  <section class="list">
+
+    <div class="list-header">
+
+      <h2>Em revisão</h2>
+
+      
+    </div>
+
+    <div class="cards">
+
+     
+      @for (cartao of cartoes; track $index) {
+
+  @if (cartao.lista === 'Em-revisao') {
+
+    <article class="card">
+
+  <div class="labels">
+    <span class="label yellow"></span>
+
+    <button
+    class="card-menu-button"
+      type="button"
+      (click)="abrirMenu(cartao)"
+    >
+      •••
+    </button>
+  </div>
+  @if (menuAberto && cartaoMenu === cartao) {
+  <div class="card-menu">
+
+    <button
+      type="button"
+      (click)="editarCartao(cartao)"
+    >
+      ✏️ Editar
+    </button>
+
+    <button
+      type="button"
+      (click)="excluirCartao(cartao)"
+    >
+      🗑️ Excluir
+    </button>
+
+  </div>
+}
+
+      <h3>
+        {{ cartao.titulo }}
+      </h3>
+
+      <p>
+        {{ cartao.descricao }}
+      </p>
+
+      <div class="card-footer">
+        <button class="move-button" (click)="moverCartao(cartao)">
+         ⇄ Mover</button>
+      </div>
+
+    </article>
+  }
+}
+
+
+    </div>
+ <button class="add-card" (click)="adicionarCartao('Em-revisao')">
+      ＋ Adicionar um cartão
+    </button>
+
+     @if (listaSelecionada === 'Em-revisao'){
+      <div class="formulario">
+
+      <h3> Adicionar atividade</h3>
+      <input 
+      type="text"
+      placeholder="Título da atividade"
+      [(ngModel)]="tituloAtividade"
+  
+>
+      <textarea placeholder="Descrição da atividade"
+      [(ngModel)]="descricaoAtividade"></textarea>
+
+      <button (click)="adicionarAtividade()">Adicionar</button>
+
+      <button (click)="cancelarAtividade()">Cancelar</button>
+
+      </div>
+    
+    }
+
+  </section>
+
+
+  
+
+  <section class="list">
+
+    <div class="list-header">
+
+      <h2>Concluído</h2>
+
+     
+
+    </div>
+
+    <div class="cards">
+
+      
+       @for (cartao of cartoes; track $index) {
+
+  @if (cartao.lista === 'finalizado') {
+
+    <article class="card">
+
+  <div class="labels">
+    <span class="label green"></span>
+
+    <button
+    class="card-menu-button"
+      type="button"
+      (click)="abrirMenu(cartao)"
+    >
+      •••
+    </button>
+  </div>
+  @if (menuAberto && cartaoMenu === cartao) {
+  <div class="card-menu">
+
+    <button
+      type="button"
+      (click)="editarCartao(cartao)"
+    >
+      ✏️ Editar
+    </button>
+
+    <button
+      type="button"
+      (click)="excluirCartao(cartao)"
+    >
+      🗑️ Excluir
+    </button>
+
+  </div>
+}
+
+      <h3>
+        {{ cartao.titulo }}
+      </h3>
+
+      <p>
+        {{ cartao.descricao }}
+      </p>
+
+      <div class="card-footer">
+        <span>✓ Concluído</span>
+      </div>
+
+    </article>
+  }
+}
+      
+      
+
+    </div>
+
+    <button class="add-card" (click)="adicionarCartao('finalizado')">
+      ＋ Adicionar um cartão
+    </button>
+
+    
+   @if (listaSelecionada === 'finalizado'){
+      <div class="formulario">
+
+      <h3> Adicionar atividade</h3>
+      <input 
+      type="text"
+      placeholder="Título da atividade"
+      [(ngModel)]="tituloAtividade"
+  
+>
+      <textarea placeholder="Descrição da atividade"
+      [(ngModel)]="descricaoAtividade"></textarea>
+
+      <button (click)="adicionarAtividade()">Adicionar</button>
+
+      <button (click)="cancelarAtividade()">Cancelar</button>
+
+      </div>
+    
+    }
+
+  </section>
+
+
+ 
+
+  <button class="add-list">
+    ＋ Adicionar outra lista
+  </button>
+
+
+</main>
+}
