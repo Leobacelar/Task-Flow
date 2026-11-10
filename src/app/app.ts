@@ -16,7 +16,7 @@ export class App {
   tituloAtividade = '';
   descricaoAtividade = '';
   
-telaAtual = 'quadros';
+telaAtual = 'inicio';
 
   
 
