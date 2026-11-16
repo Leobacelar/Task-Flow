@@ -18,12 +18,18 @@ public class DataLoader implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        if (usuarioRepository.count() > 0) {
-            return;
-        }
+        criarUsuario("Ana Souza", "ana@taskflow.com");
+        criarUsuario("Bruno Lima", "bruno@taskflow.com");
+        criarUsuario("Carla Mendes", "carla@taskflow.com");
+        criarUsuario("Vinnicius Soares Nogueira", "vinnicius@taskflow.com");
+        criarUsuario("Luciano Alves de Andrade Neto", "luciano@taskflow.com");
+        criarUsuario("Leonardo Bacelar de Paula Barreto", "leonardo@taskflow.com");
+        criarUsuario("Saimon Gomes de Oliveira", "saimon@taskflow.com");
+    }
 
-        usuarioRepository.save(new Usuario("Ana Souza", "ana@taskflow.com", "123456"));
-        usuarioRepository.save(new Usuario("Bruno Lima", "bruno@taskflow.com", "123456"));
-        usuarioRepository.save(new Usuario("Carla Mendes", "carla@taskflow.com", "123456"));
+    private void criarUsuario(String nome, String email) {
+        if (usuarioRepository.findByEmail(email).isEmpty()) {
+            usuarioRepository.save(new Usuario(nome, email, "123456"));
+        }
     }
 }
