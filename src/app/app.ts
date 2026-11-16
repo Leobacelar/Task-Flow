@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet, RouterLink} from '@angular/router';
 import { Inicio } from './inicio/inicio';
@@ -16,15 +17,37 @@ export class App {
   logado = false;
   nomeUsuario = '';
 
+  url = 'http://localhost:8080/api/atividades';
+
+  constructor(private http: HttpClient, private cd: ChangeDetectorRef) {}
+
   entrar(nome: string) {
     this.nomeUsuario = nome;
     this.logado = true;
     this.telaAtual = 'inicio';
+    this.carregar();
   }
 
   sair() {
     this.logado = false;
     this.nomeUsuario = '';
+    this.cartoes = [];
+  }
+
+  carregar() {
+    this.http.get<any[]>(this.url).subscribe(atividades => {
+      this.cartoes = atividades.map(a => ({
+        id: a.id,
+        titulo: a.titulo,
+        descricao: a.descricao,
+        lista: a.status
+      }));
+      this.cd.detectChanges();
+    });
+  }
+
+  salvar(cartao: any) {
+    return { titulo: cartao.titulo, descricao: cartao.descricao, status: cartao.lista };
   }
 
   listaSelecionada = '';
@@ -89,7 +112,8 @@ get progresso() {
       return;
     }
     this.cartaoSelecionado.lista = this.quadroDestino;
-    
+
+    this.http.put(this.url + '/' + this.cartaoSelecionado.id, this.salvar(this.cartaoSelecionado)).subscribe(() => this.carregar());
 
     this.cartaoSelecionado = null;
     this.quadroDestino = ''
@@ -117,12 +141,13 @@ get progresso() {
 
 
 
-    this.cartoes.push({
+    const novo = {
       titulo: this.tituloAtividade,
       descricao: this.descricaoAtividade,
       lista: this.listaSelecionada
-    });
-    
+    };
+
+    this.http.post(this.url, this.salvar(novo)).subscribe(() => this.carregar());
 
     this.tituloAtividade = '';
     this.descricaoAtividade = '';
@@ -152,7 +177,7 @@ fecharMenu() {
 }
 
 excluirCartao(cartao: any) {
-  this.cartoes = this.cartoes.filter(c => c !== cartao);
+  this.http.delete(this.url + '/' + cartao.id).subscribe(() => this.carregar());
 
   this.fecharMenu();
 }
@@ -172,6 +197,8 @@ editarCartao(cartao: any){
 salvarEdicao(){
   this.cartaoEditando.titulo = this.tituloAtividade;
   this.cartaoEditando.descricao = this.descricaoAtividade;
+
+  this.http.put(this.url + '/' + this.cartaoEditando.id, this.salvar(this.cartaoEditando)).subscribe(() => this.carregar());
 
   this.tituloAtividade = '';
   this.descricaoAtividade = '';

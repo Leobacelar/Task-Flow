@@ -2,7 +2,8 @@ package backend.backend.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,33 +19,42 @@ import backend.backend.repository.AtividadeRepository;
 
 @RestController
 @RequestMapping("/api/atividades")
-@CrossOrigin(origins = "*") 
+@CrossOrigin(origins = "http://localhost:4200")
 public class AtividadeController {
 
-    @Autowired
-    private AtividadeRepository repository;
+    private final AtividadeRepository atividadeRepository;
+
+    AtividadeController(AtividadeRepository atividadeRepository) {
+        this.atividadeRepository = atividadeRepository;
+    }
 
     @GetMapping
     public List<Atividade> listar() {
-        return repository.findAll();
+        return atividadeRepository.findAll();
     }
 
     @PostMapping
-    public Atividade criar(@RequestBody Atividade atividade) {
-        return repository.save(atividade);
+    public ResponseEntity<Atividade> criar(@RequestBody Atividade atividade) {
+        atividade.setId(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(atividadeRepository.save(atividade));
     }
 
     @PutMapping("/{id}")
-    public Atividade atualizar(@PathVariable Long id, @RequestBody Atividade atividadeAtualizada) {
-        return repository.findById(id).map(atividade -> {
-            atividade.setDescricao(atividadeAtualizada.getDescricao());
-            atividade.setStatus(atividadeAtualizada.getStatus());
-            return repository.save(atividade);
-        }).orElse(null);
+    public ResponseEntity<Atividade> atualizar(@PathVariable Long id, @RequestBody Atividade dados) {
+        return atividadeRepository.findById(id).map(atividade -> {
+            atividade.setTitulo(dados.getTitulo());
+            atividade.setDescricao(dados.getDescricao());
+            atividade.setStatus(dados.getStatus());
+            return ResponseEntity.ok(atividadeRepository.save(atividade));
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Long id) {
-        repository.deleteById(id);
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        if (!atividadeRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        atividadeRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
