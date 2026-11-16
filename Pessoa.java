@@ -17,3 +17,4 @@ public class Pessoa {
     public boolean isInfectado() { return infectado; }
 
     public void setInfectado(boolean infectado) { this.infectado = infectado; }
+}
