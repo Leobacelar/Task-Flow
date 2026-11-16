@@ -1,59 +1,43 @@
-# ProjetoAngular
+# TaskFlow
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.1.
+Sistema de gestão de tarefas e projetos (kanban) - Projeto Integrador, SENAC Santo Amaro.
 
-## Development server
+## Como rodar
 
-To start a local development server, run:
+**Back-end** (Java 17+, na pasta raiz do projeto):
 
-```bash
-ng serve
+```
+./mvnw spring-boot:run
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Sobe em `http://localhost:8080`. O banco é o H2 (arquivo `data/taskflowdb`) e os usuários de teste são criados na primeira execução.
 
-## Code scaffolding
+**Front-end** (Node.js, na pasta raiz do projeto):
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```
+npm install
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Abre em `http://localhost:4200`.
 
-```bash
-ng generate --help
-```
+## Login de teste
 
-## Building
+| E-mail | Senha |
+|---|---|
+| ana@taskflow.com | 123456 |
+| bruno@taskflow.com | 123456 |
+| carla@taskflow.com | 123456 |
 
-To build the project run:
+## Rotas do back
 
-```bash
-ng build
-```
+| Método | Rota | Descrição |
+|---|---|---|
+| POST | `/auth/login` | Recebe `{ "email", "senha" }`. Devolve `{ "id", "nome", "email" }` (200) ou 401 se estiver errado. |
+| GET/POST/PUT/DELETE | `/api/atividades` | CRUD de atividades. |
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Console do banco: `http://localhost:8080/h2-console` (URL `jdbc:h2:file:./data/taskflowdb`, usuário `sa`, senha vazia).
 
-## Running unit tests
+## Pastas do back
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+`src/main/java/backend/backend/` com `model`, `repository`, `controller`, `dto` e `config` (DataLoader). Configuração em `src/main/resources/application.properties`.

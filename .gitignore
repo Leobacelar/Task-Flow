@@ -2,3 +2,12 @@ target/
 data/
 .env
 *.class
+
+# Front-end
+node_modules/
+dist/
+.angular/
+
+# IDEs
+.idea/
+*.iml

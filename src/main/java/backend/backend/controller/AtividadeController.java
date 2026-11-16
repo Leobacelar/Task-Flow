@@ -1,4 +1,4 @@
-package backend.controller;
+package backend.backend.controller;
 
 import java.util.List;
 

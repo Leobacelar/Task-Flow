@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -15,11 +16,7 @@ export class Login {
   senha = '';
   erro = '';
 
-  usuarios = [
-    { nome: 'Ana Souza', email: 'ana@taskflow.com', senha: '123456' },
-    { nome: 'Bruno Lima', email: 'bruno@taskflow.com', senha: '123456' },
-    { nome: 'Carla Mendes', email: 'carla@taskflow.com', senha: '123456' }
-  ];
+  constructor(private http: HttpClient, private cd: ChangeDetectorRef) {}
 
   entrar() {
     if (this.email === '' || this.senha === '') {
@@ -27,14 +24,21 @@ export class Login {
       return;
     }
 
-    const usuario = this.usuarios.find(u => u.email === this.email && u.senha === this.senha);
+    const dados = { email: this.email, senha: this.senha };
 
-    if (usuario === undefined) {
-      this.erro = 'E-mail ou senha incorretos.';
-      return;
-    }
-
-    this.erro = '';
-    this.entrou.emit(usuario.nome);
+    this.http.post<any>('http://localhost:8080/auth/login', dados).subscribe({
+      next: usuario => {
+        this.erro = '';
+        this.entrou.emit(usuario.nome);
+      },
+      error: erro => {
+        if (erro.status === 401) {
+          this.erro = 'E-mail ou senha incorretos.';
+        } else {
+          this.erro = 'Não foi possível conectar ao servidor.';
+        }
+        this.cd.detectChanges();
+      }
+    });
   }
 }
