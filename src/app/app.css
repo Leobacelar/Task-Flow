@@ -341,6 +341,7 @@ body {
 }
 
 .card {
+  position: relative;
   background: white;
 
   border-radius: 7px;
