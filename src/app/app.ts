@@ -3,14 +3,29 @@ import { FormsModule } from '@angular/forms';
 import { RouterOutlet, RouterLink} from '@angular/router';
 import { Inicio } from './inicio/inicio';
 import { Sobre } from './sobre/sobre';
+import { Login } from './login/login';
 @Component({
-  imports: [RouterOutlet, RouterLink, FormsModule, Inicio, Sobre],
+  imports: [RouterOutlet, RouterLink, FormsModule, Inicio, Sobre, Login],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
 
 export class App {
+
+  logado = false;
+  nomeUsuario = '';
+
+  entrar(nome: string) {
+    this.nomeUsuario = nome;
+    this.logado = true;
+    this.telaAtual = 'inicio';
+  }
+
+  sair() {
+    this.logado = false;
+    this.nomeUsuario = '';
+  }
 
   listaSelecionada = '';
   tituloAtividade = '';
