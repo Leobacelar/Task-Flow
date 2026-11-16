@@ -28,6 +28,10 @@ Abre em `http://localhost:4200`.
 | ana@taskflow.com | 123456 |
 | bruno@taskflow.com | 123456 |
 | carla@taskflow.com | 123456 |
+| vinnicius@taskflow.com | 123456 |
+| luciano@taskflow.com | 123456 |
+| leonardo@taskflow.com | 123456 |
+| saimon@taskflow.com | 123456 |
 
 ## Rotas do back
 
