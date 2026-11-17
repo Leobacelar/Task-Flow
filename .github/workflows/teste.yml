@@ -1,0 +1,43 @@
+name: teste-bcrypt
+on:
+  push:
+    branches: [teste-bcrypt]
+jobs:
+  back:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Testar
+        run: |
+          set -o pipefail
+          sh mvnw -B -q -DskipTests package
+          H2=$(find ~/.m2 -name 'h2-2*.jar' | head -1)
+          H='Content-Type: application/json'
+          c() { curl -s -o /dev/null -w '%{http_code}' "$@"; }
+          sql() { java -cp "$H2" org.h2.tools.Shell -url jdbc:h2:file:./data/taskflowdb -user sa -password "" -sql "$1"; }
+          subir() {
+            nohup java -jar target/*.jar > app.log 2>&1 &
+            echo $! > pid
+            for i in $(seq 1 60); do curl -s -o /dev/null localhost:8080/auth/login -X POST && break; sleep 2; done
+            sleep 8
+          }
+          parar() { kill $(cat pid); sleep 4; }
+          subir
+          for u in ana vinnicius saimon; do echo "::notice title=login $u (200)::$(c -X POST localhost:8080/auth/login -H "$H" -d "{\"email\":\"$u@taskflow.com\",\"senha\":\"123456\"}")"; done
+          echo "::notice title=senha errada (401)::$(c -X POST localhost:8080/auth/login -H "$H" -d '{"email":"ana@taskflow.com","senha":"x"}')"
+          echo "::notice title=login sem senha (401)::$(c -X POST localhost:8080/auth/login -H "$H" -d '{"email":"ana@taskflow.com"}')"
+          echo "::notice title=cadastro (201)::$(c -X POST localhost:8080/auth/cadastro -H "$H" -d '{"nome":"Novo","email":"novo@x.com","senha":"segredo1"}')"
+          echo "::notice title=login do cadastrado (200)::$(c -X POST localhost:8080/auth/login -H "$H" -d '{"email":"novo@x.com","senha":"segredo1"}')"
+          echo "::notice title=cadastro repetido (409)::$(c -X POST localhost:8080/auth/cadastro -H "$H" -d '{"nome":"Novo","email":"novo@x.com","senha":"segredo1"}')"
+          parar
+          echo "::notice title=banco apos cadastro::$(sql "select email, senha from usuario where email in ('ana@taskflow.com','novo@x.com')" | tr '\n' ' ')"
+          sql "insert into usuario(nome,email,senha) values ('Legado','legado@x.com','abc123')" > /dev/null
+          subir
+          echo "::notice title=banco apos migracao::$(sql "select email, senha from usuario where email='legado@x.com'" | tr '\n' ' ')"
+          echo "::notice title=login do legado (200)::$(c -X POST localhost:8080/auth/login -H "$H" -d '{"email":"legado@x.com","senha":"abc123"}')"
+          echo "::notice title=regras: criar andamento (400)::$(c -X POST localhost:8080/api/atividades -H "$H" -d '{"titulo":"t","descricao":"d","status":"Em-andamento"}')"
+          echo "::notice title=h2console (200)::$(curl -s -L -o /dev/null -w '%{http_code}' localhost:8080/h2-console)"
