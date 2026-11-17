@@ -2,6 +2,7 @@ package backend.backend.config;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import backend.backend.model.Usuario;
@@ -12,8 +13,11 @@ public class DataLoader implements ApplicationRunner {
 
     private final UsuarioRepository usuarioRepository;
 
-    DataLoader(UsuarioRepository usuarioRepository) {
+    private final PasswordEncoder passwordEncoder;
+
+    DataLoader(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -25,11 +29,19 @@ public class DataLoader implements ApplicationRunner {
         criarUsuario("Luciano Alves de Andrade Neto", "luciano@taskflow.com");
         criarUsuario("Leonardo Bacelar de Paula Barreto", "leonardo@taskflow.com");
         criarUsuario("Saimon Gomes de Oliveira", "saimon@taskflow.com");
+
+        // criptografa senhas antigas que ainda estejam em texto simples no banco
+        for (Usuario usuario : usuarioRepository.findAll()) {
+            if (!usuario.getSenha().startsWith("$2")) {
+                usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+                usuarioRepository.save(usuario);
+            }
+        }
     }
 
     private void criarUsuario(String nome, String email) {
         if (usuarioRepository.findByEmail(email).isEmpty()) {
-            usuarioRepository.save(new Usuario(nome, email, "123456"));
+            usuarioRepository.save(new Usuario(nome, email, passwordEncoder.encode("123456")));
         }
     }
 }

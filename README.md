@@ -23,6 +23,8 @@ Abre em `http://localhost:4200`.
 
 ## Login de teste
 
+As senhas são salvas criptografadas (BCrypt) no banco. Novos usuários: botão "Criar conta" na tela de login.
+
 | E-mail | Senha |
 |---|---|
 | ana@taskflow.com | 123456 |
@@ -37,6 +39,7 @@ Abre em `http://localhost:4200`.
 
 | Método | Rota | Descrição |
 |---|---|---|
+| POST | `/auth/cadastro` | Recebe `{ "nome", "email", "senha" }`. Cria o usuário (201), 400 se faltar campo ou 409 se o e-mail já existir. |
 | POST | `/auth/login` | Recebe `{ "email", "senha" }`. Devolve `{ "id", "nome", "email" }` (200) ou 401 se estiver errado. |
 | GET/POST/PUT/DELETE | `/api/atividades` | CRUD de atividades. |
 

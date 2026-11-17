@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,15 +24,22 @@ public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
 
-    AuthController(UsuarioRepository usuarioRepository) {
+    private final PasswordEncoder passwordEncoder;
+
+    AuthController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/login")
     public ResponseEntity<UsuarioDTOResponse> login(@RequestBody LoginDTORequest dados) {
+        if (dados.email() == null || dados.senha() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         Optional<Usuario> usuario = usuarioRepository.findByEmail(dados.email());
 
-        if (usuario.isEmpty() || !usuario.get().getSenha().equals(dados.senha())) {
+        if (usuario.isEmpty() || !passwordEncoder.matches(dados.senha(), usuario.get().getSenha())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -50,7 +58,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        Usuario novo = usuarioRepository.save(new Usuario(dados.nome(), dados.email(), dados.senha()));
+        Usuario novo = usuarioRepository.save(new Usuario(dados.nome(), dados.email(), passwordEncoder.encode(dados.senha())));
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioDTOResponse.converter(novo));
     }
 }
