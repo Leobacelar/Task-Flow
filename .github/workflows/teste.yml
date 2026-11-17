@@ -14,7 +14,7 @@ jobs:
       - name: Compilar e subir
         run: |
           ls -la mvnw
-          ./mvnw -B -q -DskipTests package
+          sh mvnw -B -q -DskipTests package
           nohup java -jar target/*.jar > app.log 2>&1 &
           for i in $(seq 1 60); do
             if curl -s -o /dev/null localhost:8080/auth/login -X POST; then break; fi
