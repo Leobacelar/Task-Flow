@@ -35,6 +35,10 @@ public class AtividadeController {
 
     @PostMapping
     public ResponseEntity<Atividade> criar(@RequestBody Atividade atividade) {
+        // regra: toda atividade nova nasce em "A fazer"
+        if (!"a-fazer".equals(atividade.getStatus())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         atividade.setId(null);
         return ResponseEntity.status(HttpStatus.CREATED).body(atividadeRepository.save(atividade));
     }
@@ -42,6 +46,10 @@ public class AtividadeController {
     @PutMapping("/{id}")
     public ResponseEntity<Atividade> atualizar(@PathVariable Long id, @RequestBody Atividade dados) {
         return atividadeRepository.findById(id).map(atividade -> {
+            // regra: de "A fazer" nao pode ir direto para "Concluido"
+            if ("a-fazer".equals(atividade.getStatus()) && "finalizado".equals(dados.getStatus())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).<Atividade>build();
+            }
             atividade.setTitulo(dados.getTitulo());
             atividade.setDescricao(dados.getDescricao());
             atividade.setStatus(dados.getStatus());

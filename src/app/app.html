@@ -118,9 +118,11 @@
         Em revisão
       </option>
 
-      <option value="finalizado">
-        Concluído
-      </option>
+      @if (cartaoSelecionado?.lista !== 'a-fazer') {
+        <option value="finalizado">
+          Concluído
+        </option>
+      }
 
     </select>
 
@@ -344,14 +346,11 @@
 
     </div>
 
-     <button class="add-card" (click)="adicionarCartao('Em-andamento')">
-      ＋ Adicionar um cartão
-    </button>
 
     @if (listaSelecionada === 'Em-andamento'){
       <div class="formulario">
 
-      <h3> Adicionar atividade</h3>
+      <h3> Editar atividade</h3>
       <input 
       type="text"
       placeholder="Título da atividade"
@@ -361,7 +360,7 @@
       <textarea placeholder="Descrição da atividade"
       [(ngModel)]="descricaoAtividade"></textarea>
 
-      <button (click)="adicionarAtividade()">Adicionar</button>
+      <button (click)="salvarEdicao()">Salvar</button>
 
       <button (click)="cancelarAtividade()">Cancelar</button>
 
@@ -441,14 +440,11 @@
 
 
     </div>
- <button class="add-card" (click)="adicionarCartao('Em-revisao')">
-      ＋ Adicionar um cartão
-    </button>
 
      @if (listaSelecionada === 'Em-revisao'){
       <div class="formulario">
 
-      <h3> Adicionar atividade</h3>
+      <h3> Editar atividade</h3>
       <input 
       type="text"
       placeholder="Título da atividade"
@@ -458,7 +454,7 @@
       <textarea placeholder="Descrição da atividade"
       [(ngModel)]="descricaoAtividade"></textarea>
 
-      <button (click)="adicionarAtividade()">Adicionar</button>
+      <button (click)="salvarEdicao()">Salvar</button>
 
       <button (click)="cancelarAtividade()">Cancelar</button>
 
@@ -541,15 +537,12 @@
 
     </div>
 
-    <button class="add-card" (click)="adicionarCartao('finalizado')">
-      ＋ Adicionar um cartão
-    </button>
 
     
    @if (listaSelecionada === 'finalizado'){
       <div class="formulario">
 
-      <h3> Adicionar atividade</h3>
+      <h3> Editar atividade</h3>
       <input 
       type="text"
       placeholder="Título da atividade"
@@ -559,7 +552,7 @@
       <textarea placeholder="Descrição da atividade"
       [(ngModel)]="descricaoAtividade"></textarea>
 
-      <button (click)="adicionarAtividade()">Adicionar</button>
+      <button (click)="salvarEdicao()">Salvar</button>
 
       <button (click)="cancelarAtividade()">Cancelar</button>
 
@@ -572,9 +565,6 @@
 
  
 
-  <button class="add-list">
-    ＋ Adicionar outra lista
-  </button>
 
 
 </main>

@@ -1,14 +1,27 @@
 <section class="login">
 
-  <form class="login-caixa" (ngSubmit)="entrar()">
+  <form class="login-caixa" (ngSubmit)="cadastrando ? cadastrar() : entrar()">
 
     <div class="login-logo">
       <span class="logo-icon">✓</span>
       <span>TaskFlow</span>
     </div>
 
-    <h1>Entrar</h1>
-    <p>Acesse o sistema de gestão de tarefas.</p>
+    @if (cadastrando) {
+      <h1>Criar conta</h1>
+      <p>Preencha os dados para se cadastrar.</p>
+
+      <label for="nome">Nome</label>
+      <input
+        id="nome"
+        name="nome"
+        type="text"
+        placeholder="Seu nome"
+        [(ngModel)]="nome">
+    } @else {
+      <h1>Entrar</h1>
+      <p>Acesse o sistema de gestão de tarefas.</p>
+    }
 
     <label for="email">E-mail</label>
     <input
@@ -30,7 +43,17 @@
       <span class="login-erro">{{ erro }}</span>
     }
 
-    <button type="submit">Entrar</button>
+    @if (sucesso !== '') {
+      <span class="login-sucesso">{{ sucesso }}</span>
+    }
+
+    @if (cadastrando) {
+      <button type="submit">Criar conta</button>
+      <a class="login-link" (click)="mostrarLogin()">Já tenho conta</a>
+    } @else {
+      <button type="submit">Entrar</button>
+      <a class="login-link" (click)="mostrarCadastro()">Criar conta</a>
+    }
 
   </form>
 

@@ -111,9 +111,20 @@ get progresso() {
       alert('Escolha um quadro!')
       return;
     }
-    this.cartaoSelecionado.lista = this.quadroDestino;
 
-    this.http.put(this.url + '/' + this.cartaoSelecionado.id, this.salvar(this.cartaoSelecionado)).subscribe(() => this.carregar());
+    // regra: de "A fazer" nao pode ir direto para "Concluido"
+    if (this.cartaoSelecionado.lista === 'a-fazer' && this.quadroDestino === 'finalizado') {
+      alert('Uma atividade em "A fazer" não pode ir direto para "Concluído".');
+      return;
+    }
+
+    const dados = {
+      titulo: this.cartaoSelecionado.titulo,
+      descricao: this.cartaoSelecionado.descricao,
+      status: this.quadroDestino
+    };
+
+    this.http.put(this.url + '/' + this.cartaoSelecionado.id, dados).subscribe(() => this.carregar());
 
     this.cartaoSelecionado = null;
     this.quadroDestino = ''

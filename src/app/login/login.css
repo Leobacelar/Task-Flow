@@ -88,3 +88,21 @@ button {
 button:hover {
   background: #1d4ed8;
 }
+
+.login-sucesso {
+  color: #0b7a3b;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.login-link {
+  color: #2563eb;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
