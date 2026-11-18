@@ -4,12 +4,14 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import backend.backend.dto.CadastroDTORequest;
 import backend.backend.dto.LoginDTORequest;
 import backend.backend.dto.UsuarioDTOResponse;
 import backend.backend.model.Usuario;
@@ -21,6 +23,7 @@ import backend.backend.repository.UsuarioRepository;
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     AuthController(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
@@ -30,10 +33,29 @@ public class AuthController {
     public ResponseEntity<UsuarioDTOResponse> login(@RequestBody LoginDTORequest dados) {
         Optional<Usuario> usuario = usuarioRepository.findByEmail(dados.email());
 
-        if (usuario.isEmpty() || !usuario.get().getSenha().equals(dados.senha())) {
+        if (usuario.isEmpty() || !passwordEncoder.matches(dados.senha(), usuario.get().getSenha())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         return ResponseEntity.ok(UsuarioDTOResponse.converter(usuario.get()));
+    }
+
+    @PostMapping("/cadastro")
+    public ResponseEntity<?> cadastrar(@RequestBody CadastroDTORequest dados) {
+        if (dados.nome() == null || dados.nome().isBlank() ||
+            dados.email() == null || dados.email().isBlank() ||
+            dados.senha() == null || dados.senha().isBlank()) {
+            return ResponseEntity.badRequest().body("Preencha todos os campos.");
+        }
+
+        if (usuarioRepository.findByEmail(dados.email()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("E-mail já cadastrado.");
+        }
+
+        String senhaCriptografada = passwordEncoder.encode(dados.senha());
+        Usuario novoUsuario = new Usuario(dados.nome(), dados.email(), senhaCriptografada);
+        Usuario salvo = usuarioRepository.save(novoUsuario);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioDTOResponse.converter(salvo));
     }
 }
