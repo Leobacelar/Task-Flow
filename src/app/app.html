@@ -441,9 +441,7 @@
 
 
     </div>
- <button class="add-card" (click)="adicionarCartao('Em-revisao')">
-      ＋ Adicionar um cartão
-    </button>
+ 
 
      @if (listaSelecionada === 'Em-revisao'){
       <div class="formulario">
@@ -498,7 +496,7 @@
       type="button"
       (click)="abrirMenu(cartao)"
     >
-      •••
+      
     </button>
   </div>
   @if (menuAberto && cartaoMenu === cartao) {
@@ -541,9 +539,7 @@
 
     </div>
 
-    <button class="add-card" (click)="adicionarCartao('finalizado')">
-      ＋ Adicionar um cartão
-    </button>
+
 
     
    @if (listaSelecionada === 'finalizado'){
