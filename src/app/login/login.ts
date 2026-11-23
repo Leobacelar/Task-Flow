@@ -9,7 +9,8 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './login.css'
 })
 export class Login {
-
+  
+       // AVISA O (App)
   @Output() entrou = new EventEmitter<string>();
 
   email = '';
@@ -25,12 +26,15 @@ export class Login {
     }
 
     const dados = { email: this.email, senha: this.senha };
-
+    
+        // POST -> AuthController (/auth + /login). subscribe espera a resposta
     this.http.post<any>('http://localhost:8080/auth/login', dados).subscribe({
+        // 200: EMIT avisa o App
       next: usuario => {
         this.erro = '';
         this.entrou.emit(usuario.nome);
       },
+      // 401 = senha errada;
       error: erro => {
         if (erro.status === 401) {
           this.erro = 'E-mail ou senha incorretos.';
