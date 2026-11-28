@@ -36,7 +36,7 @@ public class AtividadeController {
     @PostMapping
     public ResponseEntity<Atividade> criar(@RequestBody Atividade atividade) {
         atividade.setId(null);
-        atividade.setStatus("A fazer");
+        atividade.setStatus("a-fazer");
         return ResponseEntity.status(HttpStatus.CREATED).body(atividadeRepository.save(atividade));
     }
 
